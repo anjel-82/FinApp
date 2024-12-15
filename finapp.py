@@ -29,10 +29,13 @@ def actualizar_label(event):
 def ModifyExcel():
     import pandas as pd
     index = df_anjel[df_anjel['Date'] == '/12/2024'].index.tolist() 
-    df_anjel.loc[index,'IE00B03HCZ61'] = float(EditBox.get())
+    df_anjel.loc[index,combobox.get()] = float(EditBox.get())
     with pd.ExcelWriter('Fondos.xlsx', engine='openpyxl') as writer: 
         df_anjel.to_excel(writer, sheet_name='Anjel', index=False) 
         df_maitane.to_excel(writer, sheet_name='Maitane', index=False)
+
+def UploadFondos():
+    libgoogle.upload_excel_to_gdrive_and_remove('Fondos')        
 
 
 #USER INTERFACE
@@ -55,7 +58,10 @@ label.pack(pady=10)
 button = tk.Button(root, text="Update Data from GDrive", command=UpdateFondos)
 button.pack(side="left",padx=2)
 
-SaveButton = tk.Button(root, text="Update Data To GDrive", command=ModifyExcel)
+UploadButton = tk.Button(root, text="Upload to GDrive", command=UploadFondos)
+UploadButton.pack(side="right",padx=2)
+
+SaveButton = tk.Button(root, text="Update Data", command=ModifyExcel)
 SaveButton.pack(side="right",padx=2)
 
 # Crear un Combobox
