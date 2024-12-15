@@ -21,15 +21,21 @@ def UpdateFondos():
     combobox.delete(0, 'end')  # Limpiar el menú existente
     combobox['values'] = names  # Actualizar los valores del Combobox
 
-# Función para actualizar el Label con el nombre seleccionado
-def actualizar_label(event):
-    nombre_seleccionado = combobox.get()
-    label.config(text=nombre_seleccionado)
 
 def ModifyExcel():
     import pandas as pd
-    index = df_anjel[df_anjel['Date'] == '/12/2024'].index.tolist() 
-    df_anjel.loc[index,combobox.get()] = float(EditBox.get())
+    Month=Monthcombobox.get()
+    Year=Yearcombobox.get()
+    Name = Namecombobox.get()
+    MonthYear = '/'+Month+'/'+Year
+    if Name=='Anjel':
+        index = df_anjel[df_anjel['Date'] == MonthYear].index.tolist() 
+        df_anjel.loc[index,combobox.get()] = float(EditBox.get())
+    elif Name=='Maitane':
+        index = df_maitane[df_maitane['Date'] == MonthYear].index.tolist() 
+        df_maitane.loc[index,combobox.get()] = float(EditBox.get())
+    else:
+        print('No se ha encontrado el nombre')
     with pd.ExcelWriter('Fondos.xlsx', engine='openpyxl') as writer: 
         df_anjel.to_excel(writer, sheet_name='Anjel', index=False) 
         df_maitane.to_excel(writer, sheet_name='Maitane', index=False)
@@ -50,31 +56,50 @@ root.configure(background="grey") #skyblue
 #root.config(bg="#6FAFE7")  # set background color of root window
 root.title("FinApp")
 
-# Crear un Label para mostrar el nombre seleccionado
-label = tk.Label(root, text="", bg="sky blue", width=20, height=2, font=("Arial", 14))
-label.pack(pady=10)
 
 #Crear botones
 button = tk.Button(root, text="Update Data from GDrive", command=UpdateFondos)
-button.pack(side="left",padx=2)
+button.grid(row=1, column=0)
 
 UploadButton = tk.Button(root, text="Upload to GDrive", command=UploadFondos)
-UploadButton.pack(side="right",padx=2)
+UploadButton.grid(row=5, column=1)
 
 SaveButton = tk.Button(root, text="Update Data", command=ModifyExcel)
-SaveButton.pack(side="right",padx=2)
+SaveButton.grid(row=4, column=1)
 
 # Crear un Combobox
 combobox = ttk.Combobox(root)
-combobox.pack(pady=10)
-combobox.bind("<<ComboboxSelected>>", actualizar_label) 
+combobox.grid(row=1, column=2)
+combobox.bind("<<ComboboxSelected>>") 
 
 
 #Crear zona para incluir importe de Fondo
 EditBox = tk.Entry(root)
-EditBox.pack()
+EditBox.grid(row=2, column=1)
 
-
+#Añadimos dos combobox  para seleccionar el mes y el año
+# Crear un Combobox
+Months=['1','2','3','4','5','6','7','8','9','10','11','12']
+Years=['2024','2025','2026','2027','2028','2029','2030']
+Names = ['Anjel','Maitane']
+Monthlabel = tk.Label(root, text="Select Month",bg="grey")
+Monthlabel.grid(row=6, column=0)
+Yearlabel = tk.Label(root, text="Select Year",bg="grey")
+Yearlabel.grid(row=8, column=0)
+Namelabel = tk.Label(root, text="Select Name",bg="grey")
+Namelabel.grid(row=10, column=1)
+Monthcombobox = ttk.Combobox(root)
+Monthcombobox['values'] = Months  # Actualizar los valores del Combobox
+Monthcombobox.grid(row=6, column=2)
+Monthcombobox.bind("<<ComboboxSelected>>") 
+Yearcombobox = ttk.Combobox(root)
+Yearcombobox['values'] = Years  # Actualizar los valores del Combobox
+Yearcombobox.grid(row=8, column=2)
+Yearcombobox.bind("<<ComboboxSelected>>") 
+Namecombobox = ttk.Combobox(root)
+Namecombobox['values'] = Names  # Actualizar los valores del Combobox
+Namecombobox.grid(row=11, column=1)
+Namecombobox.bind("<<ComboboxSelected>>") 
 
 # Añadir opciones al menú 
 #menu.add_command(label="Opción 1", command=lambda: print("Opción 1 seleccionada")) 
